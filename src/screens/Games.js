@@ -36,14 +36,14 @@ const Games = () => {
 
     if (loading) {
         return <div className="page--games">
-            <h1>Game</h1>
+            <h1>Games</h1>
             <p>Loading games...</p>
         </div>
     }
 
     return <div className="page--games">
         <div className="games__top">
-            <h1>Game</h1>
+            <h1>Games</h1>
             {!addingGame ?
             <button className="games__add-game-btn" onClick={() => {
                 setAddingGame(true);
