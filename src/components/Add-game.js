@@ -64,13 +64,17 @@ const AddGames = ({saveGame}) => {
     const [awayGoals, setAwayGoals] = useState(0);
     const [totalGoals, setTotalGoals] = useState(0);
     const [totalAssists, setTotalAssists] = useState(0);
+    const [totalActiveSubs, setTotalActiveSubs] = useState(0);
 
     useEffect(() => {
+        if (loading) {
+            return;
+        }
         if (user) {
             setTeam(JSON.parse(localStorage.getItem(`${user.uid}-team`)));
             setSubs(JSON.parse(localStorage.getItem(`${user.uid}-subs`)));
         }
-    }, [user])
+    }, [user, loading])
     
 
     const addTeamGoal = player => {
@@ -102,43 +106,75 @@ const AddGames = ({saveGame}) => {
     const addSubGoal = player => {
         const newSubs = [...subs];
         const index = newSubs.findIndex((teamPlayer) => teamPlayer.id === player.id);
-        if (newSubs[index].goals) {
-            newSubs[index].goals += 1;
-        } else {
-            newSubs[index].goals = 1;
+        if (totalActiveSubs < 3) {
+            newSubs[index].active = true;
+            setTotalActiveSubs(totalActiveSubs + 1);
+            setSubs(newSubs);
+        } else if (newSubs[index].active) {
+            if (newSubs[index].goals) {
+                newSubs[index].goals += 1;
+            } else {
+                newSubs[index].goals = 1;
+            }
+            const newTotalGoals = totalGoals + 1;
+            setTotalGoals(newTotalGoals);
+            setSubs(newSubs);
         }
-        newSubs[index].active = true;
-        setSubs(newSubs);
-        const newTotalGoals = totalGoals + 1;
-        setTotalGoals(newTotalGoals);
     }
     
     const addSubAssist = player => {
         const newSubs = [...subs];
         const index = newSubs.findIndex((teamPlayer) => teamPlayer.id === player.id);
-        if (newSubs[index].assists) {
-            newSubs[index].assists += 1;
-        } else {
-            newSubs[index].assists = 1;
+        if (totalActiveSubs < 3) {
+            newSubs[index].active = true;
+            setTotalActiveSubs(totalActiveSubs + 1);
+            if (newSubs[index].assists) {
+                newSubs[index].assists += 1;
+            } else {
+                newSubs[index].assists = 1;
+            }
+            const newTotalAssists = totalAssists + 1;
+            setTotalAssists(newTotalAssists);
+            setSubs(newSubs);
+        } else if (newSubs[index].active) {
+            if (newSubs[index].assists) {
+                newSubs[index].assists += 1;
+            } else {
+                newSubs[index].assists = 1;
+            }
+            const newTotalAssists = totalAssists + 1;
+            setTotalAssists(newTotalAssists);
+            setSubs(newSubs);
         }
-        newSubs[index].active = true;
-        setSubs(newSubs);
-        const newTotalAssists = totalAssists + 1;
-        setTotalAssists(newTotalAssists);
+        
     }
     
     const makeSubMotm = (player) => {
         const newSubs = [...subs];
         const index = newSubs.findIndex((teamPlayer) => teamPlayer.id === player.id);
-        newSubs[index].active = true;
-        setSubs(newSubs);
-        setMotm(player.id);
+        if (totalActiveSubs < 3) {
+            newSubs[index].active = true;
+            setTotalActiveSubs(totalActiveSubs + 1);
+            setMotm(player.id);
+            setSubs(newSubs);
+        } else if (newSubs[index].active){
+            setMotm(player.id);
+        }
     }
 
     const setPlayerActive = player => {
         const newSubs = [...subs];
         const index = newSubs.findIndex((teamPlayer) => teamPlayer.id === player.id);
-        newSubs[index].active = !newSubs[index].active;
+        const newActiveState = !newSubs[index].active;
+        if (newActiveState) {
+            if (totalActiveSubs < 3) {
+                newSubs[index].active = true;
+                setTotalActiveSubs(totalActiveSubs + 1);
+            }
+        } else {
+            newSubs[index].active = false;
+            setTotalActiveSubs(totalActiveSubs - 1);
+        }
         setSubs(newSubs);
     }
 
@@ -165,6 +201,7 @@ const AddGames = ({saveGame}) => {
         newSubs[index].goals = 0;
         if (motm !== player.id) {
             newSubs[index].active = false;
+            setTotalActiveSubs(totalActiveSubs - 1);
         }
         setSubs(newSubs);
 
