@@ -135,6 +135,13 @@ const AddGames = ({saveGame}) => {
         setMotm(player.id);
     }
 
+    const setPlayerActive = player => {
+        const newSubs = [...subs];
+        const index = newSubs.findIndex((teamPlayer) => teamPlayer.id === player.id);
+        newSubs[index].active = !newSubs[index].active;
+        setSubs(newSubs);
+    }
+
     const clearGoalsAssists = player => {
         const newTeam = [...team];
         const index = newTeam.findIndex((teamPlayer) => teamPlayer.id === player.id);
@@ -187,7 +194,7 @@ const AddGames = ({saveGame}) => {
         const teamItems = subs.map((teamPlayer, index) => 
         <li className={`games__player games__player--sub ${teamPlayer.active && "active"}`} key={index}>
             <div className={teamPlayer.isGoalKeeper ? "gk" : undefined}>
-                <img className={`games__player--img games__player--img--sub ${motm === teamPlayer.id ? "motm" : undefined}`} alt={teamPlayer.name + " image"} src={teamPlayer.image} />
+                <img onClick={() => setPlayerActive(teamPlayer)}  className={`games__player--img games__player--img--sub ${motm === teamPlayer.id ? "motm" : undefined}`} alt={teamPlayer.name + " image"} src={teamPlayer.image} />
             </div>
             <div className="games__player--info">
                 <p className="games__player--name">{teamPlayer.name.length > 20 ? teamPlayer.name.substring(0, 20) + "..." : teamPlayer.name}</p>
