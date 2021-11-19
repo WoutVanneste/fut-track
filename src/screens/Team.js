@@ -16,6 +16,7 @@ import {
 
 const Team = () => {
     const [playerSearch, setPlayerSearch] = useState("");
+    const [subPlayerSearch, setSubPlayerSearch] = useState("");
     const [team, setTeam] = useState([]);
     const [subs, setSubs] = useState([]);
     const [teamHasGoalKeeper, setTeamHasGoalKeeper] = useState(false);
@@ -59,7 +60,6 @@ const Team = () => {
             const docRef = await doc(userCollection, user.uid);
             const document = await getDoc(docRef);
             const docData = document.data();
-            debugger;
             if (docData.team) {
                 localStorage.setItem(`${user.uid}-team`, JSON.stringify(docData.team));
                 setTeam(docData.team);
@@ -180,7 +180,7 @@ const Team = () => {
         if (playersLoading) {
             return <p>loading...</p>
         }
-        if (players) {
+        if (players && playerSearch !== "") {
             const sortedPlayers = players.sort((a,b)=> (a.rating < b.rating ? 1 : -1))
             const playerItems = sortedPlayers.map((player, index) => 
                 <li className="search__player" key={index}>
@@ -204,7 +204,7 @@ const Team = () => {
         if (playersLoading) {
             return <p>loading...</p>
         }
-        if (players) {
+        if (players && subPlayerSearch !== "") {
             const sortedPlayers = players.sort((a,b)=> (a.rating < b.rating ? 1 : -1))
             const playerItems = sortedPlayers.map((player, index) => 
                 <li className="search__player" key={index}>
@@ -215,7 +215,7 @@ const Team = () => {
                         <p className="search__player--name">{player.name.length > 20 ? player.name.substring(0, 20) + "..." : player.name}</p>
                         <button className="team__btn search__player--add-btn" onClick={() => {
                             addToSubs(player);
-                            setPlayerSearch("");
+                            setSubPlayerSearch("");
                         }}>Add to subs</button>
                     </div>
                 </li>
@@ -260,7 +260,7 @@ const Team = () => {
     const renderSubs = () => {
         let teamItems = null;
         if (subs.length) {
-            const teamItems = subs.map((teamPlayer, index) => 
+            teamItems = subs.map((teamPlayer, index) => 
                 <li className="team__player" key={index}>
                     <div className={teamPlayer.isGoalKeeper ? "gk" : undefined}>
                         <img className="team__player--img" alt={teamPlayer.name + " image"} src={teamPlayer.image} />
@@ -326,15 +326,15 @@ const Team = () => {
             <input
                 type="text"
                 className="player-search__input"
-                value={playerSearch}
+                value={subPlayerSearch}
                 onChange={(e) => {
-                    setPlayerSearch(e.target.value)
+                    setSubPlayerSearch(e.target.value)
                     const filteredPlayers = filterPlayers(e.target.value);
                     setPlayers(filteredPlayers);
                 }}
                 placeholder="Search substitution players"
             />
-            {playerSearch.length > 0 ? renderSubPlayers() : null}
+            {subPlayerSearch.length > 0 ? renderSubPlayers() : null}
         </div> : team.length === 11 && null}
         {subs.length > 0 && <p>Current subs:</p>}
         {renderSubs()}

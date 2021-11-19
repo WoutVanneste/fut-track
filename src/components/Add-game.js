@@ -290,12 +290,7 @@ const AddGames = ({saveGame}) => {
                 newAllTimePlayerStats.push(player);
             }
         })
-
-        console.log('alltimeplayer stats set to:', newAllTimePlayerStats);
-        debugger;
-        
         localStorage.setItem(`allTimePlayerStats-${user.uid}`, JSON.stringify(newAllTimePlayerStats))
-
         // Should be going to db as well.
         team.forEach(player => {
             if (player.goals) {
