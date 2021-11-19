@@ -11,15 +11,20 @@ const Games = () => {
 
 
     useEffect(() => {
+        if (loading) {
+            // maybe trigger a loading screen
+            return;
+        }
         if (user) {
             if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
                 setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)))
             }
         }
-    }, [user])
+    }, [loading, user])
 
     const renderGames = () => {
-        const gameItems = games.map((game, index) => 
+        const sortedGames = games.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
+        const gameItems = sortedGames.map((game, index) => 
             <li className={`games__list--item ${game.result === 1 ? 'win' : ''} ${game.result === 2 ? 'draw' : ''} ${game.result === 3 ? 'loss' : ''}`} key={index}>
                 <p className="games__list--result">{game.goalsScored} - {game.goalsConceded}</p>
                 <p className="games__list--date">Date: {new Date(game.dateTime).toLocaleString().toString()}</p>
@@ -27,6 +32,13 @@ const Games = () => {
         )
 
         return <div>{gameItems}</div>
+    }
+
+    if (loading) {
+        return <div className="page--games">
+            <h1>Game</h1>
+            <p>Loading games...</p>
+        </div>
     }
 
     return <div className="page--games">
