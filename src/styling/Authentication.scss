@@ -1,0 +1,24 @@
+.page--login, .page--register {
+    padding: 20px 10px 10px 10px;
+}
+
+.login__input, .register__input {
+    border: none;
+    padding: 5px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.login__btn, .register__btn {
+    display: block;
+    border: none;
+    background-color: #3652E7;
+    color: white;
+    padding: 7.5px 12.5px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.login__link, .register__link {
+    text-decoration: underline;
+}

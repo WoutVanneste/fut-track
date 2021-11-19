@@ -1,0 +1,97 @@
+.page--team {
+    padding: 20px 10px 150px 10px;
+}
+
+.player-search__input {
+    border: none;
+    padding: 5px;
+    margin-bottom: 10px;
+    display: block;
+    width: calc(100% - 10px);
+    outline: none;
+}
+
+.save-team__btn {
+    display: block;
+    border: none;
+    background-color: #C2F655;
+    color: #242834;
+    padding: 7.5px 12.5px;
+    border-radius: 5px;
+    margin-bottom: 7.5px;
+    font-weight: 900;
+    font-size: 16px;
+
+    &:disabled {
+        filter: brightness(50%);
+        cursor: not-allowed;
+    }
+}
+
+.team__btn {
+    display: block;
+    border: none;
+    background-color: #3652E7;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 7.5px;
+    &.search__player--add-btn {
+        width: 85px;
+    }
+    &.team__player--remove-btn {
+        width: 65px;
+    }
+}
+
+.search__player--results {
+    border: 2px solid white;
+    padding-top: 15px;
+}
+
+.search__player--results, .team__player--results {
+    background: #242834;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.search__player, .team__player {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.search__player--img, .team__player--img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+}
+.gk {
+    position: relative;
+    &::after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 999;
+        content: "GK";
+        width: 17.5px;
+        height: 22.5px;
+        background-color: #C2F655;
+        color: #242834;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 13px;
+    }
+}
+
+.search__player--name, .team__player--name {
+    margin: 0;
+}
+
+.search__player--info, .team__player--info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 10px;
+}

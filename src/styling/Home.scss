@@ -1,0 +1,208 @@
+.page--home {
+    padding: 20px 10px 10px 10px;
+}
+
+.overview__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    height: 50px;
+}
+
+.overview__icons {
+    display: flex;
+}
+
+.overview__wins {
+    background: url("../assets/image/green-up.png");
+    color: #242834;
+}
+
+.overview__draws {
+    background: url("../assets/image/blue-down.png");
+}
+
+.overview__draws-text {
+    margin-bottom: 15px;
+}
+
+.overview__losses {
+    margin-left: 10px;
+    background: url("../assets/image/red-right.png");
+}
+
+.overview__losses-text {
+    margin-right: 15px;
+}
+
+.overview__wins, .overview__draws, .overview__losses {
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home--content {
+    padding: 10px;
+}
+
+.top__goals__assists {
+    display: flex;
+    justify-content: space-between;
+}
+
+.top__goals, .top__assists {
+    display: flex;
+    flex-direction: column;
+}
+
+.top__goals {
+    align-items: flex-start;
+}
+
+.top__assists {
+    align-items: flex-end;
+}
+
+.top__assists--title, .top__goals--title {
+    position: relative;
+    margin-bottom: 10px;
+    font-size: 28px;
+    &::after {
+        content: "";
+        position: absolute;
+        width: 45px;
+        height: 45px;
+        background: url("../assets/image/blue-down-single.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        z-index: -5;
+    }
+}
+
+.top__assists--title {
+    &::after {
+        right: -17px;
+        top: -5px;
+        transform: rotate(-10deg);
+    }
+}
+
+.top__goals--title {
+    &::after {
+        left: -17px;
+        top: -5px;
+        transform: rotate(10deg);
+    }
+}
+
+.top__assists--image, .top__goals--image {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+}
+
+.top__assists--name, .top__goals--name {
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.top__assists--info, .top__goals--info {
+    font-size: 18px;
+    margin-top: 5px;
+}
+
+.game__goals {
+    margin-top: 40px;
+}
+
+.game__goals--title {
+    margin-bottom: 10px;
+    position: relative;
+    font-size: 28px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 45px;
+        height: 45px;
+        background: url("../assets/image/blue-down-single.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        z-index: -5;
+        left: -17px;
+        top: -5px;
+        transform: rotate(10deg);
+    }
+}
+
+.styled__bar--wrapper {
+    width: calc(100% - 60px);
+    margin: auto;
+    height: 30px;
+    display: block;
+    position: relative;
+}
+
+.game__goals--average {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 35px;
+}
+
+.general__stats {
+    margin-top: 40px;
+    font-size: 18px;
+}
+
+.last__games {
+    display: flex;
+    justify-content: space-between;
+}
+
+.last__games--title {
+    margin-bottom: 10px;
+    position: relative;
+    font-size: 28px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 45px;
+        height: 45px;
+        background: url("../assets/image/blue-down-single.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        z-index: -5;
+        left: -17px;
+        top: -5px;
+        transform: rotate(10deg);
+    }
+}
+
+.last__games--win {
+    background: url("../assets/image/green-up-single.png");
+}
+
+.last__games--draw {
+    background: url("../assets/image/blue-up-single.png");
+}
+
+.last__games--loss {
+    background: url("../assets/image/red-up-single.png");
+}
+
+.last__games--win, .last__games--draw, .last__games--loss {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    &:nth-child(2), &:nth-child(4) {
+        transform: rotate(60deg) translateX(-5px) translateY(-5px);
+    }
+}
