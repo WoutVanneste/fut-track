@@ -254,23 +254,28 @@ const Team = () => {
             </li>
         )
         } else {
-            teamItems = <p>lol</p>
+            teamItems = <p>Select players for your team</p>
         }
         return <div className="team__player--results">{teamItems}</div>;
     }
 
     const renderSubs = () => {
-        const teamItems = subs.map((teamPlayer, index) => 
-            <li className="team__player" key={index}>
-                <div className={teamPlayer.isGoalKeeper ? "gk" : undefined}>
-                    <img className="team__player--img" alt={teamPlayer.name + " image"} src={teamPlayer.image} />
-                </div>
-                <div className="team__player--info">
-                    <p className="team__player--name">{teamPlayer.name.length > 20 ? teamPlayer.name.substring(0, 20) + "..." : teamPlayer.name}</p>
-                    <button className="team__btn team__player--remove-btn" onClick={() => removeFromSubs(teamPlayer)}>Remove</button>
-                </div>
-            </li>
-        )
+        let teamItems = null;
+        if (subs.length) {
+            const teamItems = subs.map((teamPlayer, index) => 
+                <li className="team__player" key={index}>
+                    <div className={teamPlayer.isGoalKeeper ? "gk" : undefined}>
+                        <img className="team__player--img" alt={teamPlayer.name + " image"} src={teamPlayer.image} />
+                    </div>
+                    <div className="team__player--info">
+                        <p className="team__player--name">{teamPlayer.name.length > 20 ? teamPlayer.name.substring(0, 20) + "..." : teamPlayer.name}</p>
+                        <button className="team__btn team__player--remove-btn" onClick={() => removeFromSubs(teamPlayer)}>Remove</button>
+                    </div>
+                </li>
+            )
+        } else {
+            teamItems = <p>Select players for your bench</p>
+        }
         return <div className="team__player--results">{teamItems}</div>;
     }
 
