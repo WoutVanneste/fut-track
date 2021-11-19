@@ -198,9 +198,11 @@ const Home = () => {
                 }
             })
 
-            return <div>
+            return <div className="last__games">
                 <h2 className="last__games--title">Last 5 games</h2>
-                {list.map(item => item)}
+                <div className="last__games--icons">
+                    {list.map(item => item)}
+                </div>
                 </div>
        }
     }
@@ -251,7 +253,7 @@ const Home = () => {
                 {renderGameGoals()}
             </div>
             <div className="general__stats">
-                <div  className="last__games">
+                <div>
                     {renderLast5Games()}
                 </div>
                 {renderGeneralStats()}
