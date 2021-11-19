@@ -253,8 +253,6 @@ const Team = () => {
                 </div>
             </li>
         )
-        } else {
-            teamItems = <p>Select players for your team</p>
         }
         return <div className="team__player--results">{teamItems}</div>;
     }
@@ -273,8 +271,6 @@ const Team = () => {
                     </div>
                 </li>
             )
-        } else {
-            teamItems = <p>Select players for your bench</p>
         }
         return <div className="team__player--results">{teamItems}</div>;
     }
@@ -307,6 +303,7 @@ const Team = () => {
         {team.length === 10 && !teamHasGoalKeeper && <p className="team__select-message">Please select a goalkeeper for your team.</p>}
         {team.length < 11 ? 
         <div>
+            <p>Select players for your team</p>
             <input
                 type="text"
                 className="player-search__input"
@@ -325,18 +322,19 @@ const Team = () => {
         {renderTeam()}
         {subs.length < 7 ?
         <div>
-        <input
-            type="text"
-            className="player-search__input"
-            value={playerSearch}
-            onChange={(e) => {
-                setPlayerSearch(e.target.value)
-                const filteredPlayers = filterPlayers(e.target.value);
-                setPlayers(filteredPlayers);
-            }}
-            placeholder="Search substitution players"
-        />
-        {playerSearch.length > 0 ? renderSubPlayers() : null}
+            <p>Select players for your bench</p>
+            <input
+                type="text"
+                className="player-search__input"
+                value={playerSearch}
+                onChange={(e) => {
+                    setPlayerSearch(e.target.value)
+                    const filteredPlayers = filterPlayers(e.target.value);
+                    setPlayers(filteredPlayers);
+                }}
+                placeholder="Search substitution players"
+            />
+            {playerSearch.length > 0 ? renderSubPlayers() : null}
         </div> : team.length === 11 && null}
         {subs.length > 0 && <p>Current subs:</p>}
         {renderSubs()}
