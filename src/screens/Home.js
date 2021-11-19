@@ -177,7 +177,7 @@ const Home = () => {
     const renderLast5Games = () => {
        if (games.length > 0) {
             let lastGames = games;
-            lastGames.sort((a,b) => new Date((a.dateTime) > new Date(b.dateTime) ? 1 : -1));
+            lastGames.sort((a,b) => new Date((a.dateTime) < new Date(b.dateTime) ? 1 : -1));
 
             lastGames = lastGames.slice(0,5);
 
