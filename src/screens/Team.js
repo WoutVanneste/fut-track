@@ -12,6 +12,7 @@ import {
     setDoc,
     doc
    } from '@firebase/firestore/lite';
+import TeamStats from '../components/Team-stats';
 
 
 const Team = () => {
@@ -26,8 +27,12 @@ const Team = () => {
     const [teamExists, setTeamExists] = useState(false);
     const [subsExists, setSubsExists] = useState(false);
     const [playersLoading, setPlayersLoading] = useState(false);
+    const [showingStats, setShowingStats] = useState(false);
 
     useEffect(() => {
+        if (loading) {
+            return;
+        }
         if (user) {
             if (localStorage.getItem(`${user.uid}-team`)) {
                 setTeamExists(true);
@@ -128,7 +133,6 @@ const Team = () => {
                     player.cleanSheets = 0;
                 }
             })
-            console.log('subs', subs);
             localStorage.setItem(`${user.uid}-team`, JSON.stringify(team));
             localStorage.setItem(`${user.uid}-subs`, JSON.stringify(subs));
             
@@ -291,6 +295,50 @@ const Team = () => {
         }
     }
 
+    const renderTeamData = () => {
+        return <div>
+            {team.length === 10 && !teamHasGoalKeeper && <p className="team__select-message">Please select a goalkeeper for your team.</p>}
+            {team.length < 11 ? 
+            <div>
+                <p>Select players for your team</p>
+                <input
+                    type="text"
+                    className="player-search__input"
+                    value={playerSearch}
+                    onChange={(e) => {
+                        setPlayerSearch(e.target.value)
+                        const filteredPlayers = filterPlayers(e.target.value);
+                        setPlayers(filteredPlayers);
+                    }}
+                    placeholder="Search team players"
+                />
+                {playerSearch.length > 0 ? renderPlayers() : null}
+            </div> : 
+            subs.length === 7 && <p>Great! You have 11 players in your team</p>}
+            {team.length > 0 && <p>Current team:</p>}
+            {renderTeam()}
+            {subs.length < 7 ?
+            <div>
+                <p>Select players for your bench</p>
+                <input
+                    type="text"
+                    className="player-search__input"
+                    value={subPlayerSearch}
+                    onChange={(e) => {
+                        setSubPlayerSearch(e.target.value)
+                        const filteredPlayers = filterPlayers(e.target.value);
+                        setPlayers(filteredPlayers);
+                    }}
+                    placeholder="Search substitution players"
+                />
+                {subPlayerSearch.length > 0 ? renderSubPlayers() : null}
+            </div> : team.length === 11 && null}
+            {subs.length > 0 && <p>Current subs:</p>}
+            {renderSubs()}
+            {!teamExists || !subsExists ? <button className="save-team__btn" onClick={() => saveTeam()} disabled={team.length < 11}>Save team</button> : null}
+        </div>
+    }
+
     if (loading) {
         return <div className="page--team">
             <h1>Team</h1>
@@ -299,46 +347,19 @@ const Team = () => {
     }
     // return <p>lol</p>;
     return <div className="page--team">
+        <div className="team__top">
         <h1>Team</h1>
-        {team.length === 10 && !teamHasGoalKeeper && <p className="team__select-message">Please select a goalkeeper for your team.</p>}
-        {team.length < 11 ? 
-        <div>
-            <p>Select players for your team</p>
-            <input
-                type="text"
-                className="player-search__input"
-                value={playerSearch}
-                onChange={(e) => {
-                    setPlayerSearch(e.target.value)
-                    const filteredPlayers = filterPlayers(e.target.value);
-                    setPlayers(filteredPlayers);
-                }}
-                placeholder="Search team players"
-            />
-            {playerSearch.length > 0 ? renderPlayers() : null}
-        </div> : 
-        subs.length === 7 && <p>Great! You have 11 players in your team</p>}
-        {team.length > 0 && <p>Current team:</p>}
-        {renderTeam()}
-        {subs.length < 7 ?
-        <div>
-            <p>Select players for your bench</p>
-            <input
-                type="text"
-                className="player-search__input"
-                value={subPlayerSearch}
-                onChange={(e) => {
-                    setSubPlayerSearch(e.target.value)
-                    const filteredPlayers = filterPlayers(e.target.value);
-                    setPlayers(filteredPlayers);
-                }}
-                placeholder="Search substitution players"
-            />
-            {subPlayerSearch.length > 0 ? renderSubPlayers() : null}
-        </div> : team.length === 11 && null}
-        {subs.length > 0 && <p>Current subs:</p>}
-        {renderSubs()}
-        {!teamExists || !subsExists ? <button className="save-team__btn" onClick={() => saveTeam()} disabled={team.length < 11}>Save team</button> : null}
+        {!showingStats ?
+            <button className="games__add-game-btn" onClick={() => {
+                setShowingStats(true);
+            }}>Show stats</button> :
+            <button className="games__add-game-btn games__add-game-btn--remove" onClick={() => {
+                setShowingStats(false);
+            }}>x</button>}
+        </div>
+        {showingStats ? 
+        <TeamStats /> : 
+        renderTeamData()}
     </div>
 }
 

@@ -16,7 +16,7 @@ const Login = () => {
       return;
     }
     if (error) {
-      console.log('error man', error);
+      console.log('error', error);
     }
     if (user) navigate("/home");
   }, [user, loading, error, navigate]);
