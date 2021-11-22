@@ -9,7 +9,6 @@ import {
     getFirestore,
     getDoc,
     updateDoc,
-    setDoc,
     doc
    } from '@firebase/firestore/lite';
 import TeamStats from '../components/Team-stats';
@@ -135,7 +134,7 @@ const Team = () => {
             localStorage.setItem(`${user.uid}-team`, JSON.stringify(team));
             localStorage.setItem(`${user.uid}-subs`, JSON.stringify(subs));
                         
-            await setDoc(doc(db, 'users', user.uid), {
+            await updateDoc(doc(db, 'users', user.uid), {
                 team: team,
                 subs: subs
             })
