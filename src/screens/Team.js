@@ -73,7 +73,6 @@ const Team = () => {
                 localStorage.setItem(`${user.uid}-subs`, JSON.stringify(docData.subs));
                 setSubs(docData.subs)
             }
-            localStorage.setItem('lastteamupdate', new Date().toString());
         }
         const date = new Date();
         const localDate = localStorage.getItem('lastupdate');
@@ -135,19 +134,12 @@ const Team = () => {
             })
             localStorage.setItem(`${user.uid}-team`, JSON.stringify(team));
             localStorage.setItem(`${user.uid}-subs`, JSON.stringify(subs));
+                        
+            await setDoc(doc(db, 'users', user.uid), {
+                team: team,
+                subs: subs
+            })
             
-            const date = new Date();
-            const localDate = localStorage.getItem('lastteamupdate');
-            const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
-            
-            // if 2 days ago, upload team to db
-            if (millisecondsDiff > 172800000) {
-                await setDoc(doc(db, 'users', user.uid), {
-                    team: team,
-                    subs: subs
-                })
-                localStorage.setItem('lastteamupdate', new Date().toString());
-            }
         }
     }
 

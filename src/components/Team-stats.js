@@ -25,7 +25,7 @@ const TeamStats = () => {
                 }
                 return a.goals < b.goals ? 1 : -1
              }
-             return a.games > b.games ? 1 : -1;
+             return a.games < b.games ? 1 : -1;
         });
         const teamItems = sortedTeam.map((player, index) => (
             <li key={index} className="team__player__top">
