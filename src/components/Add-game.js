@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { auth} from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import '../styling/Games.scss';
-
+import { db } from '../firebase';
+import {
+    updateDoc,
+    doc
+   } from '@firebase/firestore/lite';
 // const game1 = [
 //     {
 //         "goalsConceded": 0,
@@ -108,6 +112,11 @@ const AddGames = ({saveGame}) => {
         const index = newSubs.findIndex((teamPlayer) => teamPlayer.id === player.id);
         if (totalActiveSubs < 3) {
             newSubs[index].active = true;
+            if (newSubs[index].goals) {
+                newSubs[index].goals += 1;
+            } else {
+                newSubs[index].goals = 1;
+            }
             setTotalActiveSubs(totalActiveSubs + 1);
             setSubs(newSubs);
         } else if (newSubs[index].active) {
@@ -247,7 +256,7 @@ const AddGames = ({saveGame}) => {
         return <div className="games__player--results">{teamItems}</div>;
     }
 
-    const submitGame = () => {
+    const submitGame = async () => {
         if (totalAssists > totalGoals) {
             alert('You cannot have more assists than goals.');
             return;
@@ -284,30 +293,84 @@ const AddGames = ({saveGame}) => {
         if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
             allTimePlayerStats = JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`))
         }
-        let newAllTimePlayerStats = [];
 
-        team.forEach(player => {
-            player.games ++;
-            if (awayGoals === 0) {
-                player.cleanSheets ++;
-            }
-            if (motm === player.id) {
-                player.motms ++;
-            }
-            allTimePlayerStats.forEach(statsPlayer => {
-                if (statsPlayer.id === player.id) {
-                    player.games = statsPlayer.games + 1;
-                    player.goals = statsPlayer.goals + player.goals;
-                    player.assists = statsPlayer.assists + player.assists;
-                    player.motms = statsPlayer.motms + player.motms;
-                    player.cleanSheets = statsPlayer.cleanSheets + player.cleanSheets;
-                }
-            })
-            newAllTimePlayerStats.push(player);
-        });
+        let newAllTimePlayerStats = allTimePlayerStats;
 
-        subs.forEach(player => {
-            if (player.active) {
+        if (allTimePlayerStats.length > 0) {
+            allTimePlayerStats.forEach((allTimePlayer, index) => {
+                team.forEach(player => {
+                    if (allTimePlayer.id === player.id) {
+                        player.games ++;
+                        if (awayGoals === 0) {
+                            player.cleanSheets ++;
+                        }
+                        if (motm === player.id) {
+                            player.motms ++;
+                        }
+                        allTimePlayer.games = allTimePlayer.games + 1;
+                        allTimePlayer.goals = allTimePlayer.goals + player.goals;
+                        allTimePlayer.assists = allTimePlayer.assists + player.assists;
+                        allTimePlayer.motms = allTimePlayer.motms + player.motms;
+                        allTimePlayer.cleanSheets = allTimePlayer.cleanSheets + player.cleanSheets;
+                        newAllTimePlayerStats[index] = allTimePlayer;
+                        return;
+                    } else {
+                        const playerExists = id => {
+                            return allTimePlayerStats.some(player => {
+                                return player.id === id;
+                            });
+                        }
+                        if (!playerExists(player.id)) {
+                            player.games ++;
+                            if (awayGoals === 0) {
+                                player.cleanSheets ++;
+                            }
+                            if (motm === player.id) {
+                                player.motms ++;
+                            }
+                            newAllTimePlayerStats.push(player);
+                        }
+                    }
+                });
+                subs.forEach(player => {
+                    if (player.active) {
+                        if (allTimePlayer.id === player.id) {
+                            player.games ++;
+                            if (awayGoals === 0) {
+                                player.cleanSheets ++;
+                            }
+                            if (motm === player.id) {
+                                player.motms ++;
+                            }
+                            allTimePlayer.games = allTimePlayer.games + 1;
+                            allTimePlayer.goals = allTimePlayer.goals + player.goals;
+                            allTimePlayer.assists = allTimePlayer.assists + player.assists;
+                            allTimePlayer.motms = allTimePlayer.motms + player.motms;
+                            allTimePlayer.cleanSheets = allTimePlayer.cleanSheets + player.cleanSheets;
+                            newAllTimePlayerStats[index] = allTimePlayer;
+                            return;
+                        } else {
+                            const playerExists = id => {
+                                return allTimePlayerStats.some(player => {
+                                    return player.id === id;
+                                });
+                            }
+                            if (!playerExists(player.id)) {
+                                player.games ++;
+                                if (awayGoals === 0) {
+                                    player.cleanSheets ++;
+                                }
+                                if (motm === player.id) {
+                                    player.motms ++;
+                                }
+                                newAllTimePlayerStats.push(player);
+                            }
+                        }
+                    }
+                });
+            });
+        } else {
+            team.forEach(player => {
                 player.games ++;
                 if (awayGoals === 0) {
                     player.cleanSheets ++;
@@ -315,19 +378,26 @@ const AddGames = ({saveGame}) => {
                 if (motm === player.id) {
                     player.motms ++;
                 }
-                allTimePlayerStats.forEach(statsPlayer => {
-                    if (statsPlayer.id === player.id) {
-                        player.games = statsPlayer.games + 1;
-                        player.goals = statsPlayer.goals + player.goals;
-                        player.assists = statsPlayer.assists + player.assists;
-                        player.motms = statsPlayer.motms + player.motms;
-                        player.cleanSheets = statsPlayer.cleanSheets + player.cleanSheets;
-                    }
-                })
                 newAllTimePlayerStats.push(player);
-            }
-        })
+            });
+
+            subs.forEach(player => {
+                if (player.active) {
+                    player.games ++;
+                    if (awayGoals === 0) {
+                        player.cleanSheets ++;
+                    }
+                    if (motm === player.id) {
+                        player.motms ++;
+                    }
+                    newAllTimePlayerStats.push(player);
+                }
+            })
+        }
         localStorage.setItem(`allTimePlayerStats-${user.uid}`, JSON.stringify(newAllTimePlayerStats))
+        await updateDoc(doc(db, 'users', user.uid), {
+            allTimeStats: newAllTimePlayerStats
+        })
         // Should be going to db as well.
         team.forEach(player => {
             if (player.goals) {
