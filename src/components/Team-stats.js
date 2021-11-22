@@ -23,6 +23,8 @@ const TeamStats = () => {
             const usersRef = collection(firestore, 'users');
             const usersSnapshot = await getDocs(usersRef);
             const teamsList = usersSnapshot.docs.map(doc => doc.data())[0];
+            localStorage.setItem(`allTimePlayerStats-${user.uid}`, JSON.stringify(teamsList.allTimeStats))
+            localStorage.setItem('allTimePlayerStatsUpdate', new Date().toString());
             setTeam(teamsList.allTimeStats);
             setTeamLoading(false);
             } 
@@ -38,7 +40,6 @@ const TeamStats = () => {
                     setTeam(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
                 }
             }
-            
         }
     }, [user, loading]);
 

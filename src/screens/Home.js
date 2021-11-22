@@ -4,6 +4,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router";
 import { auth } from "../firebase";
 import "../styling/Home.scss";
+import { collection, getDocs } from 'firebase/firestore/lite';
+import { db, app } from '../firebase';
+import {
+    getFirestore,
+   } from '@firebase/firestore/lite';
 
 const StyledBar = styled.div`
     display: inline-block;
@@ -53,6 +58,7 @@ const Home = () => {
     const [user, loading, error] = useAuthState(auth);
     const [playerStats, setPlayerStats] = useState([]);
     const [games, setGames] = useState([]);
+    const [teamLoading, setTeamLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,12 +74,32 @@ const Home = () => {
 
     useEffect(() => {
         if (user) {
-            if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
-                setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
-            }
-             if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
+            if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
                 setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)))
             }
+            async function getTeamStats(db) {
+                setTeamLoading(true);
+                const firestore = getFirestore(app);
+                const usersRef = collection(firestore, 'users');
+                const usersSnapshot = await getDocs(usersRef);
+                const teamsList = usersSnapshot.docs.map(doc => doc.data())[0];
+                localStorage.setItem(`allTimePlayerStats-${user.uid}`, JSON.stringify(teamsList.allTimeStats))
+                localStorage.setItem('allTimePlayerStatsUpdate', new Date().toString());
+                setPlayerStats(teamsList.allTimeStats);
+                setTeamLoading(false);
+                } 
+                const date = new Date();
+                const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
+                const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
+        
+                // If 6 hours no update, do update 
+                if (millisecondsDiff > 21600000) {
+                    getTeamStats(db);
+                } else {
+                    if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
+                        setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
+                    }
+                }
         }
     }, [user])
 
@@ -235,7 +261,7 @@ const Home = () => {
         }
     }
 
-    if (loading) {
+    if (loading || teamLoading) {
         return <div className="page--home">
             <div className="overview__container"><h1>Overview</h1></div>
             <p>Loading overview...</p>
