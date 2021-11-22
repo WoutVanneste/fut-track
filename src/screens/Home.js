@@ -76,7 +76,7 @@ const Home = () => {
             if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
                 setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)))
             }
-            async function getTeamStats(db) {
+            async function updateLocalStorageFromDb(db) {
                 setTeamLoading(true);
                 const firestore = getFirestore(app);
                 const usersRef = collection(firestore, 'users');
@@ -84,26 +84,46 @@ const Home = () => {
                 const teamsList = usersSnapshot.docs.map(doc => doc.data())[0];
                 localStorage.setItem(`allTimePlayerStats-${user.uid}`, JSON.stringify(teamsList.allTimeStats))
                 localStorage.setItem('allTimePlayerStatsUpdate', new Date().toString());
+                localStorage.setItem(`allTimeGames-${user.uid}`, JSON.stringify(teamsList.games))
+                localStorage.setItem('allTimeGamesUpdate', new Date().toString());
+                setGames(teamsList.games);
                 setPlayerStats(teamsList.allTimeStats);
                 setTeamLoading(false);
-                } 
-                const date = new Date();
-                if (localStorage.getItem('allTimePlayerStatsUpdate')) {
-                    const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
-                    const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
-                    // If 6 hours no update, do update 
-                    if (millisecondsDiff > 21600000) {
-                        getTeamStats(db);
-                    } else {
-                        if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
-                            setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
-                        }
-                    }
+            }
+            const date = new Date();
+            if (localStorage.getItem('allTimePlayerStatsUpdate')) {
+                const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
+                const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
+                // If 6 hours no update, do update 
+                if (millisecondsDiff > 21600000) {
+                    updateLocalStorageFromDb(db);
                 } else {
                     if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
                         setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
                     }
                 }
+            } else {
+                if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
+                    setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
+                }
+            }
+
+            if (localStorage.getItem('allTimeGamesUpdate')) {
+                const localDate = localStorage.getItem('allTimeGamesUpdate');
+                const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
+                // If 6 hours no update, do update 
+                if (millisecondsDiff > 21600000) {
+                    updateLocalStorageFromDb(db);
+                } else {
+                    if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
+                        setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)));
+                    }
+                }
+            } else {
+                if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
+                    setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)));
+                }
+            }
                
         }
     }, [user])
@@ -197,6 +217,10 @@ const Home = () => {
             if (totalScored + totalConceded > 100) {
                 totalConceded --;
             }
+            totalScored = totalScored < 15 ? 15 : totalScored;
+            totalScored = totalScored > 85 ? 85 : totalScored;
+            totalConceded = totalConceded < 15 ? 15 : totalConceded;
+            totalConceded = totalConceded > 85 ? 85 : totalConceded;
             return <div>
                 <h2 className="game__goals--title">Total / average goals</h2>
                 {/* eslint-disable-next-line react/jsx-no-undef */}

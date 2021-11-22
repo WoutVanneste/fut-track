@@ -3,11 +3,18 @@ import { auth} from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import AddGames from '../components/Add-game';
 import '../styling/Games.scss';
+import { db } from '../firebase';
+import { collection } from 'firebase/firestore/lite';
+import {
+    getDoc,
+    doc
+   } from '@firebase/firestore/lite';
 
 const Games = () => {
     const [addingGame, setAddingGame] = useState(false);
     const [games, setGames] = useState([]);
     const [user, loading, error] = useAuthState(auth);
+    const [gamesLoading, setGamesLoading] = useState(false);
 
 
     useEffect(() => {
@@ -18,11 +25,45 @@ const Games = () => {
             console.log('error', error);
         }
         if (user) {
-            if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
-                setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)))
-            }
+            return;
         }
     }, [error, loading, user])
+
+    useEffect(() => {
+        if (user) {
+            async function getGames(db) {
+                setGamesLoading(true);
+                localStorage.setItem('allTimeGamesUpdate', new Date().toString());
+                const userCollection = collection(db, 'users');
+                const docRef = await doc(userCollection, user.uid);
+                const document = await getDoc(docRef);
+                const docData = document.data();
+                if (docData.games) {
+                    localStorage.setItem(`allTimeGames-${user.uid}`, JSON.stringify(docData.games));
+                }
+                setGamesLoading(false);
+            }
+            const date = new Date();
+            if (localStorage.getItem('allTimeGamesUpdate')) {
+                const localDate = localStorage.getItem('allTimeGamesUpdate');
+                const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
+        
+                // If 2 days no update, do update 
+                if (millisecondsDiff > 172800000) {
+                    getGames(db);
+                } else {
+                    if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
+                        setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)))
+                    }
+                }
+            } else {
+                if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
+                    setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)))
+                }
+            }
+        }
+        
+    }, [user])
 
     const renderGames = () => {
        if (games.length > 0) {
@@ -39,7 +80,7 @@ const Games = () => {
         }
     }
 
-    if (loading) {
+    if (loading || gamesLoading) {
         return <div className="page--games">
             <h1>Games</h1>
             <p>Loading games...</p>

@@ -3,7 +3,9 @@ import { auth} from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import '../styling/Games.scss';
 import { db } from '../firebase';
+import { collection } from 'firebase/firestore/lite';
 import {
+    getDoc,
     updateDoc,
     doc
    } from '@firebase/firestore/lite';
@@ -17,6 +19,7 @@ const AddGames = ({saveGame}) => {
     const [totalGoals, setTotalGoals] = useState(0);
     const [totalAssists, setTotalAssists] = useState(0);
     const [totalActiveSubs, setTotalActiveSubs] = useState(0);
+    const [gamesLoading, setGamesLoading] = useState(false);
 
     useEffect(() => {
         if (loading) {
@@ -34,6 +37,32 @@ const AddGames = ({saveGame}) => {
             }
         }
     }, [user, loading, error])
+
+    useEffect(() => {
+        if (user) {
+            async function getGames(db) {
+                setGamesLoading(true);
+                localStorage.setItem('allTimeGamesUpdate', new Date().toString());
+                const userCollection = collection(db, 'users');
+                const docRef = await doc(userCollection, user.uid);
+                const document = await getDoc(docRef);
+                const docData = document.data();
+                if (docData.games) {
+                    localStorage.setItem(`allTimeGames-${user.uid}`, JSON.stringify(docData.games));
+                }
+                setGamesLoading(false);
+            }
+            const date = new Date();
+            const localDate = localStorage.getItem('allTimeGamesUpdate');
+            const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
+
+            // If 2 days no update, do update 
+            if (millisecondsDiff > 172800000) {
+                getGames(db);
+            }
+        }
+        
+    }, [user])
     
 
     const addTeamGoal = player => {
@@ -243,6 +272,7 @@ const AddGames = ({saveGame}) => {
         }
         allTimeGames.push(newGame);
         localStorage.setItem(`allTimeGames-${user.uid}`, JSON.stringify(allTimeGames))
+        localStorage.setItem(`allTimeGamesUpdate`, new Date().toString());
 
         let allTimePlayerStats = [];
         if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
@@ -350,11 +380,11 @@ const AddGames = ({saveGame}) => {
             })
         }
         localStorage.setItem(`allTimePlayerStats-${user.uid}`, JSON.stringify(newAllTimePlayerStats))
-
         localStorage.setItem('allTimePlayerStatsUpdate', new Date().toString());
      
         await updateDoc(doc(db, 'users', user.uid), {
-            allTimeStats: newAllTimePlayerStats
+            allTimeStats: newAllTimePlayerStats,
+            games: allTimeGames
         })
         // Should be going to db as well.
         team.forEach(player => {
@@ -381,33 +411,37 @@ const AddGames = ({saveGame}) => {
         saveGame();
     }
 
-    if (team.length > 0 && subs.length > 0) {
-        return <div className="component--add-games">
-            <div className="games__top-section">
-                <p className="games__scoreline">Scoreline: 
-                    <span className="games__total-goals">{totalGoals}</span>- 
-                    <span className="games__total-goals" onClick={() => {
-                        const newAwayGoals = awayGoals + 1;
-                        setAwayGoals(newAwayGoals);
-                    }}>{awayGoals}</span>
-                    {awayGoals > 0 && <button className={`games__clear-btn ${awayGoals > 0 && "active"}`} onClick={() => {
-                        const newAwayGoals = awayGoals - 1;
-                        setAwayGoals(newAwayGoals);
-                    }
-                    }>-</button>}
-                </p>
-                <button className="games__add-game-btn" onClick={submitGame}>Save game</button>
+   if (loading || gamesLoading) {
+       return <p>Loading...</p>
+   } else {
+        if (team.length > 0 && subs.length > 0) {
+            return <div className="component--add-games">
+                <div className="games__top-section">
+                    <p className="games__scoreline">Scoreline: 
+                        <span className="games__total-goals">{totalGoals}</span>- 
+                        <span className="games__total-goals" onClick={() => {
+                            const newAwayGoals = awayGoals + 1;
+                            setAwayGoals(newAwayGoals);
+                        }}>{awayGoals}</span>
+                        {awayGoals > 0 && <button className={`games__clear-btn ${awayGoals > 0 && "active"}`} onClick={() => {
+                            const newAwayGoals = awayGoals - 1;
+                            setAwayGoals(newAwayGoals);
+                        }
+                        }>-</button>}
+                    </p>
+                    <button className="games__add-game-btn" onClick={submitGame}>Save game</button>
+                </div>
+                <p>Team</p>
+                {renderTeam()}
+                <p>Subs</p>
+                {renderSubs()}
             </div>
-            <p>Team</p>
-            {renderTeam()}
-            <p>Subs</p>
-            {renderSubs()}
-        </div>
-    } else {
-        return <div className="component--add-games">
-            <p>You don't have any players in your team yet. Create your team and add your first game.</p>
-        </div>
-    }
+        } else {
+            return <div className="component--add-games">
+                <p>You don't have any players in your team yet. Create your team and add your first game.</p>
+            </div>
+        }
+   }
 }
 
 export default AddGames;

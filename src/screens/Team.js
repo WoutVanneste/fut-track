@@ -57,7 +57,7 @@ const Team = () => {
             setInitialPlayers(playersList);
             setPlayersLoading(false);
             localStorage.setItem('playerslist', JSON.stringify(playersList));
-            localStorage.setItem('lastupdate', new Date().toString());
+            localStorage.setItem('teamUpdate', new Date().toString());
             const userCollection = collection(db, 'users');
             const docRef = await doc(userCollection, user.uid);
             const document = await getDoc(docRef);
@@ -72,7 +72,7 @@ const Team = () => {
             }
         }
         const date = new Date();
-        const localDate = localStorage.getItem('lastupdate');
+        const localDate = localStorage.getItem('teamUpdate');
         const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
 
         // If 2 days no update, do update 
@@ -131,7 +131,7 @@ const Team = () => {
             })
             localStorage.setItem(`${user.uid}-team`, JSON.stringify(team));
             localStorage.setItem(`${user.uid}-subs`, JSON.stringify(subs));
-                        
+            localStorage.setItem('teamUpdate', new Date().toString());
             await updateDoc(doc(db, 'users', user.uid), {
                 team: team,
                 subs: subs

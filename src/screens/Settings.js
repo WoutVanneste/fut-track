@@ -31,6 +31,7 @@ const Settings = () => {
         localStorage.clear();
         await updateDoc(doc(db, 'users', user.uid), {
             allTimeStats: deleteField(),
+            games: deleteField(),
             team: deleteField(),
             subs: deleteField()
         })
