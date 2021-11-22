@@ -16,6 +16,9 @@ const TeamStats = () => {
         if (loading) {
             return;
         }
+        if (error) {
+            console.log('error', error);
+        }
         if (user) {
             async function getTeamStats(db) {
             setTeamLoading(true);
@@ -29,19 +32,20 @@ const TeamStats = () => {
             setTeamLoading(false);
             } 
             const date = new Date();
-            const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
-            const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
-    
-            // If 6 hours no update, do update 
-            if (millisecondsDiff > 21600000) {
-                getTeamStats(db);
+            if (localStorage.getItem('allTimePlayerStatsUpdate')) {
+                const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
+                const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
+                 // If 6 hours no update, do update 
+                if (millisecondsDiff > 21600000) {
+                    getTeamStats(db);
+                } 
             } else {
                 if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
                     setTeam(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
                 }
             }
         }
-    }, [user, loading]);
+    }, [user, loading, error]);
 
     const renderTeam = () => {
         const sortedTeam = team.sort((a, b) => {
@@ -70,9 +74,13 @@ const TeamStats = () => {
         return <p>Loading stats...</p>
     }
 
-    return <div>
-        {renderTeam()}
-    </div>;
+    if (team.length > 0) {
+        return <div>
+            {renderTeam()}
+        </div>;
+    } else {
+        return <p>You don't have a team yet, create your team to see the player stats.</p>
+    }
 }
 
 export default TeamStats;

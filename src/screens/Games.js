@@ -12,15 +12,17 @@ const Games = () => {
 
     useEffect(() => {
         if (loading) {
-            // maybe trigger a loading screen
             return;
+        }
+        if (error) {
+            console.log('error', error);
         }
         if (user) {
             if (localStorage.getItem(`allTimeGames-${user.uid}`)) {
                 setGames(JSON.parse(localStorage.getItem(`allTimeGames-${user.uid}`)))
             }
         }
-    }, [loading, user])
+    }, [error, loading, user])
 
     const renderGames = () => {
         const sortedGames = games.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))

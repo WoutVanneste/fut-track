@@ -63,7 +63,6 @@ const Home = () => {
 
     useEffect(() => {
         if (loading) {
-            // maybe trigger a loading screen
             return;
         }
         if (error) {
@@ -89,85 +88,100 @@ const Home = () => {
                 setTeamLoading(false);
                 } 
                 const date = new Date();
-                const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
-                const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
-        
-                // If 6 hours no update, do update 
-                if (millisecondsDiff > 21600000) {
-                    getTeamStats(db);
+                if (localStorage.getItem('allTimePlayerStatsUpdate')) {
+                    const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
+                    const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
+                     // If 6 hours no update, do update 
+                    if (millisecondsDiff > 21600000) {
+                        getTeamStats(db);
+                    } 
                 } else {
                     if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
                         setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
                     }
                 }
+               
         }
     }, [user])
 
     const renderOverview = () => {
-        let wins = 0;
-        let draws = 0;
-        let losses = 0;
-        games.forEach(game => {
-            // eslint-disable-next-line default-case
-            switch(game.result) {
-                case 1: wins ++;
-                break;
-                case 2: draws++;
-                break;
-                case 3: losses++;
-                break;
-            }
-        });
-        return <div className="overview__container">
-            <h1>Overview</h1>
-            <div className="overview__icons">
-                <div className="overview__wins">
-                    <span className="overview__wins-text">{wins}</span>
-                </div>
-                <div className="overview__draws">
-                    <span className="overview__draws-text">{draws}</span>
-                </div>
-                <div className="overview__losses">
-                    <span className="overview__losses-text">{losses}</span>
+        if (games.length > 0) {
+            let wins = 0;
+            let draws = 0;
+            let losses = 0;
+            games.forEach(game => {
+                // eslint-disable-next-line default-case
+                switch(game.result) {
+                    case 1: wins ++;
+                    break;
+                    case 2: draws++;
+                    break;
+                    case 3: losses++;
+                    break;
+                }
+            });
+            return <div className="overview__container">
+                <h1>Overview</h1>
+                <div className="overview__icons">
+                    <div className="overview__wins">
+                        <span className="overview__wins-text">{wins}</span>
+                    </div>
+                    <div className="overview__draws">
+                        <span className="overview__draws-text">{draws}</span>
+                    </div>
+                    <div className="overview__losses">
+                        <span className="overview__losses-text">{losses}</span>
+                        </div>
                     </div>
                 </div>
+        } else {
+            return <div>
+                <div className="overview__container">
+                    <h1>Overview</h1>
+                </div>
+                <p>No data found for your club. Add a team and your first game to see the stats!</p>
             </div>
+        }
     }
 
     const renderMostGoals = () => {
-        const sortedPlayers = playerStats.sort((a, b) => a.goals < b.goals ? 1 : -1)
-        let topPlayer = sortedPlayers[0];
-        if (topPlayer) {
-            const goalsPerGame = Math.round(topPlayer.goals/topPlayer.games * 10) / 10;
-            return <div className="top__goals">
-                <h2 className="top__goals--title">Goals</h2>
-                <img className="top__goals--image" alt={topPlayer.name} src={topPlayer.image} />
-                <span className="top__goals--name">{topPlayer.name.length > 20 ? topPlayer.name.substring(0, 20) + "..." : topPlayer.name}</span>
-                <span className="top__goals--info">{topPlayer.goals} goals</span>
-                <span className="top__goals--info">{goalsPerGame} goals / game</span>
-            </div>
+        if (playerStats.length > 0) {
+            const sortedPlayers = playerStats.sort((a, b) => a.goals < b.goals ? 1 : -1)
+            let topPlayer = sortedPlayers[0];
+            if (topPlayer) {
+                const goalsPerGame = Math.round(topPlayer.goals/topPlayer.games * 10) / 10;
+                return <div className="top__goals">
+                    <h2 className="top__goals--title">Goals</h2>
+                    <img className="top__goals--image" alt={topPlayer.name} src={topPlayer.image} />
+                    <span className="top__goals--name">{topPlayer.name.length > 20 ? topPlayer.name.substring(0, 20) + "..." : topPlayer.name}</span>
+                    <span className="top__goals--info">{topPlayer.goals} goals</span>
+                    <span className="top__goals--info">{goalsPerGame} goals / game</span>
+                </div>
+            }
         }
     }
 
     const renderMostAssists = () => {
-        const sortedPlayers = playerStats.sort((a, b) => a.assists < b.assists ? 1 : -1)
-        let topPlayer = sortedPlayers[0];
-        if (topPlayer) {
-            const assistsPerGame = Math.round(topPlayer.assists/topPlayer.games * 10) / 10;
-            return <div className="top__assists">
-                <h2 className="top__assists--title">Assists</h2>
-                <img className="top__assists--image" alt={topPlayer.name} src={topPlayer.image} />
-                <span className="top__assists--name">{topPlayer.name.length > 20 ? topPlayer.name.substring(0, 20) + "..." : topPlayer.name}</span>
-                <span className="top__assists--info">{topPlayer.assists} assists</span>
-                <span className="top__assists--info">{assistsPerGame} assists / game</span>
-            </div>
+        if (playerStats.length > 0) {
+            const sortedPlayers = playerStats.sort((a, b) => a.assists < b.assists ? 1 : -1)
+            let topPlayer = sortedPlayers[0];
+            if (topPlayer) {
+                const assistsPerGame = Math.round(topPlayer.assists/topPlayer.games * 10) / 10;
+                return <div className="top__assists">
+                    <h2 className="top__assists--title">Assists</h2>
+                    <img className="top__assists--image" alt={topPlayer.name} src={topPlayer.image} />
+                    <span className="top__assists--name">{topPlayer.name.length > 20 ? topPlayer.name.substring(0, 20) + "..." : topPlayer.name}</span>
+                    <span className="top__assists--info">{topPlayer.assists} assists</span>
+                    <span className="top__assists--info">{assistsPerGame} assists / game</span>
+                </div>
+            }
         }
     }
 
     const renderGameGoals = () => {
-        let goalsScored = 0;
-        let goalsConceded = 0;
         if (games.length > 0) {
+            let goalsScored = 0;
+            let goalsConceded = 0;
             games.forEach(game => {
                 goalsScored += game.goalsScored;
                 goalsConceded += game.goalsConceded;
@@ -204,11 +218,8 @@ const Home = () => {
        if (games.length > 0) {
             let lastGames = games;
             lastGames.sort((a,b) => new Date((a.dateTime) < new Date(b.dateTime) ? 1 : -1));
-
             lastGames = lastGames.slice(0,5);
-
             let list = [];
-
             lastGames.forEach(game => {
                 // eslint-disable-next-line default-case
                 switch (game.result) {
@@ -250,10 +261,8 @@ const Home = () => {
                     biggestWin.awayGoals = game.goalsConceded;
                 }
             })
-
             const bestResult = <p>Best result: {biggestWin.goals} - {biggestWin.awayGoals}</p>
             const cleanSheetsElement = <p>Cleansheets: {cleanSheets}</p>
-
             return <div>
                 {bestResult}
                 {cleanSheetsElement}

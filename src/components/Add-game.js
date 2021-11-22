@@ -7,58 +7,6 @@ import {
     updateDoc,
     doc
    } from '@firebase/firestore/lite';
-// const game1 = [
-//     {
-//         "goalsConceded": 0,
-//         "goalsScored": 2,
-//         "result": 1,
-//         "dateTime": 1637170253628
-//     }
-// ];
-// const game2 = [
-//     {
-//         "goalsConceded": 3,
-//         "goalsScored": 2,
-//         "result": 1,
-//         "dateTime": 1637171043978
-//     }
-// ];
-// // Reguilon, fellaini en gravenberg sub on - allemaal clean sheet zonder kaarten.
-// const playersUpdate1 = [
-//     {
-//         "name": "mpabbe",
-//         "goals":  1
-//     },
-//     {
-//         "name": "keane",
-//         "goals": 1
-//     },
-//     {
-//         "name": "cuadrado",
-//         "assists": 2
-//     },
-//     {
-//         "name": "szcensny",
-//         "manOfThematches": 1
-//     }
-// ];
-// // Reguillon sub on
-// const playersUpdate2 = [
-//     {
-//         "name": "mpabbe",
-//         "goals":  2,
-//         "manOfThematches": 1
-//     },
-//     {
-//         "name": "keane",
-//         "goals": 1,
-//         "assists": 2
-//     },
-//     {
-//         "name": "fofana",
-//         "assists": 1
-//     }
-// ];
 
 const AddGames = ({saveGame}) => {
     const [motm, setMotm] = useState(0);
@@ -74,11 +22,18 @@ const AddGames = ({saveGame}) => {
         if (loading) {
             return;
         }
-        if (user) {
-            setTeam(JSON.parse(localStorage.getItem(`${user.uid}-team`)));
-            setSubs(JSON.parse(localStorage.getItem(`${user.uid}-subs`)));
+        if (error) {
+            console.log('error', error);
         }
-    }, [user, loading])
+        if (user) {
+            if (localStorage.getItem(`${user.uid}-team`)) {
+                setTeam(JSON.parse(localStorage.getItem(`${user.uid}-team`)));
+            }
+            if (localStorage.getItem(`${user.uid}-subs`)) {
+                setSubs(JSON.parse(localStorage.getItem(`${user.uid}-subs`)));
+            }
+        }
+    }, [user, loading, error])
     
 
     const addTeamGoal = player => {
@@ -426,27 +381,33 @@ const AddGames = ({saveGame}) => {
         saveGame();
     }
 
-    return <div className="component--add-games">
-        <div className="games__top-section">
-            <p className="games__scoreline">Scoreline: 
-                <span className="games__total-goals">{totalGoals}</span>- 
-                <span className="games__total-goals" onClick={() => {
-                    const newAwayGoals = awayGoals + 1;
-                    setAwayGoals(newAwayGoals);
-                }}>{awayGoals}</span>
-                {awayGoals > 0 && <button className={`games__clear-btn ${awayGoals > 0 && "active"}`} onClick={() => {
-                    const newAwayGoals = awayGoals - 1;
-                    setAwayGoals(newAwayGoals);
-                }
-                }>-</button>}
-            </p>
-            <button className="games__add-game-btn" onClick={submitGame}>Save game</button>
+    if (team.length > 0 && subs.length > 0) {
+        return <div className="component--add-games">
+            <div className="games__top-section">
+                <p className="games__scoreline">Scoreline: 
+                    <span className="games__total-goals">{totalGoals}</span>- 
+                    <span className="games__total-goals" onClick={() => {
+                        const newAwayGoals = awayGoals + 1;
+                        setAwayGoals(newAwayGoals);
+                    }}>{awayGoals}</span>
+                    {awayGoals > 0 && <button className={`games__clear-btn ${awayGoals > 0 && "active"}`} onClick={() => {
+                        const newAwayGoals = awayGoals - 1;
+                        setAwayGoals(newAwayGoals);
+                    }
+                    }>-</button>}
+                </p>
+                <button className="games__add-game-btn" onClick={submitGame}>Save game</button>
+            </div>
+            <p>Team</p>
+            {renderTeam()}
+            <p>Subs</p>
+            {renderSubs()}
         </div>
-        <p>Team</p>
-        {renderTeam()}
-        <p>Subs</p>
-        {renderSubs()}
-    </div>
+    } else {
+        return <div className="component--add-games">
+            <p>You don't have any players in your team yet. Create your team and add your first game.</p>
+        </div>
+    }
 }
 
 export default AddGames;

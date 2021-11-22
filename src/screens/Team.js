@@ -2,11 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { auth} from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db } from '../firebase';
-import { collection, getDocs, addDoc } from 'firebase/firestore/lite';
+import { collection, getDocs } from 'firebase/firestore/lite';
 import '../styling/Team.scss';
-
 import {
-    getFirestore,
     getDoc,
     updateDoc,
     doc
