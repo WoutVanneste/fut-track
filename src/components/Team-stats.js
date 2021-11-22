@@ -79,7 +79,7 @@ const TeamStats = () => {
             {renderTeam()}
         </div>;
     } else {
-        return <p>You don't have a team yet, create your team to see the player stats.</p>
+        return <p>You don't have a team with game stats yet, create your team and add games to see the player stats.</p>
     }
 }
 
