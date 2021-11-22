@@ -18,11 +18,10 @@ const Register = () => {
     };
     useEffect(() => {
       if (loading) {
-        // maybe trigger a loading screen
         return;
       }
       if (error) {
-        console.log('error man', error);
+        console.log('error', error);
       }
       if (user) navigate("/home");
     }, [user, loading, error, navigate]);

@@ -86,7 +86,6 @@ const Team = () => {
 
     const saveTeam = async () => {
         if (loading) {
-            // maybe trigger a loading screen
             return;
         }
         if (error) {

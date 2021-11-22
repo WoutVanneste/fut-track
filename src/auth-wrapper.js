@@ -11,11 +11,10 @@ const AuthWrapper = ({children}) => {
 
       useEffect(() => {
         if (loading) {
-            // maybe trigger a loading screen
             return;
         }
         if (error) {
-        console.log('error', error);
+          console.log('error', error);
         }
         if (!location.pathname.includes("register") && !location.pathname.includes("login")) {
             if (!user) navigate("/");
