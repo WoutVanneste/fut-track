@@ -38,7 +38,11 @@ const TeamStats = () => {
                  // If 6 hours no update, do update 
                 if (millisecondsDiff > 21600000) {
                     getTeamStats(db);
-                } 
+                } else {
+                    if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
+                        setTeam(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
+                    }
+                }
             } else {
                 if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
                     setTeam(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));

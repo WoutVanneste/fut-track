@@ -25,15 +25,18 @@ const Games = () => {
     }, [error, loading, user])
 
     const renderGames = () => {
-        const sortedGames = games.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
-        const gameItems = sortedGames.map((game, index) => 
-            <li className={`games__list--item ${game.result === 1 ? 'win' : ''} ${game.result === 2 ? 'draw' : ''} ${game.result === 3 ? 'loss' : ''}`} key={index}>
-                <p className="games__list--result">{game.goalsScored} - {game.goalsConceded}</p>
-                <p className="games__list--date">Date: {new Date(game.dateTime).toLocaleString().toString()}</p>
-            </li>
-        )
-
-        return <div>{gameItems}</div>
+       if (games.length > 0) {
+            const sortedGames = games.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
+            const gameItems = sortedGames.map((game, index) => 
+                <li className={`games__list--item ${game.result === 1 ? 'win' : ''} ${game.result === 2 ? 'draw' : ''} ${game.result === 3 ? 'loss' : ''}`} key={index}>
+                    <p className="games__list--result">{game.goalsScored} - {game.goalsConceded}</p>
+                    <p className="games__list--date">Date: {new Date(game.dateTime).toLocaleString().toString()}</p>
+                </li>
+            )
+            return <div>{gameItems}</div>
+        } else {
+            return <p>No games added so far.</p>
+        }
     }
 
     if (loading) {

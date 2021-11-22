@@ -91,10 +91,14 @@ const Home = () => {
                 if (localStorage.getItem('allTimePlayerStatsUpdate')) {
                     const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
                     const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
-                     // If 6 hours no update, do update 
+                    // If 6 hours no update, do update 
                     if (millisecondsDiff > 21600000) {
                         getTeamStats(db);
-                    } 
+                    } else {
+                        if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
+                            setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
+                        }
+                    }
                 } else {
                     if (localStorage.getItem(`allTimePlayerStats-${user.uid}`)) {
                         setPlayerStats(JSON.parse(localStorage.getItem(`allTimePlayerStats-${user.uid}`)));
@@ -190,11 +194,9 @@ const Home = () => {
             const averageGoalsConceded = Math.round(goalsConceded / games.length * 10) / 10;
             let totalScored = Math.round(goalsScored / (goalsScored + goalsConceded) * 100);
             let totalConceded = Math.round(goalsConceded / (goalsScored + goalsConceded) * 100);
-            // Make sure the minimum and maximum is set so styling stays ok.
-            totalScored = totalScored < 15 ? 15 : totalScored;
-            totalScored = totalScored > 85 ? 85 : totalScored;
-            totalConceded = totalConceded < 15 ? 15 : totalConceded;
-            totalConceded = totalConceded > 85 ? 85 : totalConceded;
+            if (totalScored + totalConceded > 100) {
+                totalConceded --;
+            }
             return <div>
                 <h2 className="game__goals--title">Total / average goals</h2>
                 {/* eslint-disable-next-line react/jsx-no-undef */}
@@ -220,17 +222,17 @@ const Home = () => {
             lastGames.sort((a,b) => new Date((a.dateTime) < new Date(b.dateTime) ? 1 : -1));
             lastGames = lastGames.slice(0,5);
             let list = [];
-            lastGames.forEach(game => {
+            lastGames.forEach((game, index) => {
                 // eslint-disable-next-line default-case
                 switch (game.result) {
                     case 1:
-                        list.push(<div className="last__games--win"></div>)
+                        list.push(<div key={index} className="last__games--win"></div>)
                         break;
                     case 2:
-                        list.push(<div className="last__games--draw"></div>)
+                        list.push(<div key={index} className="last__games--draw"></div>)
                         break;
                     case 3:
-                        list.push(<div className="last__games--loss"></div>)
+                        list.push(<div key={index} className="last__games--loss"></div>)
                         break;
                 }
             })
