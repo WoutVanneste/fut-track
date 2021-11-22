@@ -395,6 +395,9 @@ const AddGames = ({saveGame}) => {
             })
         }
         localStorage.setItem(`allTimePlayerStats-${user.uid}`, JSON.stringify(newAllTimePlayerStats))
+
+        localStorage.setItem('allTimePlayerStatsUpdate', new Date().toString());
+     
         await updateDoc(doc(db, 'users', user.uid), {
             allTimeStats: newAllTimePlayerStats
         })
