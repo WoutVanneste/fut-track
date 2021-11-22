@@ -18,7 +18,15 @@ const TeamStats = () => {
     }, [user, loading]);
 
     const renderTeam = () => {
-        const sortedTeam = team.sort((a, b) => a.games < b.games ? 1 : -1);
+        const sortedTeam = team.sort((a, b) => {
+            if (a.games === b.games) {
+                if (a.goals === b.goals) {
+                    return a.assists < b.assists ? 1 : -1
+                }
+                return a.goals < b.goals ? 1 : -1
+             }
+             return a.games > b.games ? 1 : -1;
+        });
         const teamItems = sortedTeam.map((player, index) => (
             <li key={index} className="team__player__top">
                 <img className="team__player--img" alt={player.name} src={player.image}/>
