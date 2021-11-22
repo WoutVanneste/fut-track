@@ -35,7 +35,7 @@ const TeamStats = () => {
             if (localStorage.getItem('allTimePlayerStatsUpdate')) {
                 const localDate = localStorage.getItem('allTimePlayerStatsUpdate');
                 const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
-                 // If 6 hours no update, do update 
+                // If 6 hours no update, do update 
                 if (millisecondsDiff > 21600000) {
                     getTeamStats(db);
                 } else {

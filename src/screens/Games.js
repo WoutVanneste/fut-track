@@ -48,8 +48,8 @@ const Games = () => {
                 const localDate = localStorage.getItem('allTimeGamesUpdate');
                 const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
         
-                // If 2 days no update, do update 
-                if (millisecondsDiff > 172800000) {
+                // If 6 hours no update, do update 
+                if (millisecondsDiff > 21600000) {
                     getGames(db);
                 } else {
                     if (localStorage.getItem(`allTimeGames-${user.uid}`)) {

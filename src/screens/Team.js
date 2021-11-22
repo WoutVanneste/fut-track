@@ -75,9 +75,9 @@ const Team = () => {
         const localDate = localStorage.getItem('teamUpdate');
         const millisecondsDiff = Math.abs(date.getTime() - new Date(localDate).getTime());
 
-        // If 2 days no update, do update 
         if (user) {
-            if (millisecondsDiff > 172800000) {
+            // If 6 hours no update, do update 
+            if (millisecondsDiff > 21600000) {
                 getPlayers(db);
             }
         }
