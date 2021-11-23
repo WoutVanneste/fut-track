@@ -274,7 +274,7 @@ const Home = () => {
         if (games.length > 0) {
             let biggestWin = {
                 goals: 0,
-                awayGoals: 0
+                awayGoals: 1000
             };
             let cleanSheets = 0;
             games.forEach(game => {
