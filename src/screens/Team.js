@@ -269,11 +269,11 @@ const Team = () => {
 
     const filterPlayers = (value) => {
         if (team.length === 10 && !teamHasGoalKeeper) {
-            const inputFilteredPlayers = initialPlayers.filter(player => player.name.toLowerCase().includes(value.toLowerCase()));
+            const inputFilteredPlayers = initialPlayers.filter(player => player.searchName.toLowerCase().includes(value.toLowerCase()));
             const onlyGoalKeepers = inputFilteredPlayers.filter(player => player.isGoalKeeper);
             return onlyGoalKeepers;
         } else {
-            const inputFilteredPlayers = initialPlayers.filter(player => player.name.toLowerCase().includes(value.toLowerCase()));
+            const inputFilteredPlayers = initialPlayers.filter(player => player.searchName.toLowerCase().includes(value.toLowerCase()));
             const teamExcludedPlayers = inputFilteredPlayers.filter(player => !containsObject(player, team));
             let goalKeeperFilteredPlayers = teamExcludedPlayers;
             if (teamHasGoalKeeper) {
