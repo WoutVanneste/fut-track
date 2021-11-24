@@ -297,6 +297,8 @@ const AddGames = ({saveGame}) => {
                         allTimePlayer.assists = allTimePlayer.assists + player.assists;
                         allTimePlayer.motms = allTimePlayer.motms + player.motms;
                         allTimePlayer.cleanSheets = allTimePlayer.cleanSheets + player.cleanSheets;
+                        allTimePlayer.image = player.image;
+                        allTimePlayer.rating = player.rating;
                         newAllTimePlayerStats[index] = allTimePlayer;
                         return;
                     } else {
@@ -332,6 +334,8 @@ const AddGames = ({saveGame}) => {
                             allTimePlayer.assists = allTimePlayer.assists + player.assists;
                             allTimePlayer.motms = allTimePlayer.motms + player.motms;
                             allTimePlayer.cleanSheets = allTimePlayer.cleanSheets + player.cleanSheets;
+                            allTimePlayer.image = player.image;
+                            allTimePlayer.rating = player.rating;
                             newAllTimePlayerStats[index] = allTimePlayer;
                             return;
                         } else {
