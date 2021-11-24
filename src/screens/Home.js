@@ -170,7 +170,15 @@ const Home = () => {
 
     const renderMostGoals = () => {
         if (playerStats.length > 0) {
-            const sortedPlayers = playerStats.sort((a, b) => a.goals < b.goals ? 1 : -1)
+            const sortedPlayers = playerStats.sort((a, b) => {
+                if (a.goals === b.goals) {
+                    if (a.assists === b.assists) {
+                        return a.games < b.games ? 1 : -1
+                    }
+                    return a.assists < b.assists ? 1 : -1
+                 }
+                 return a.goals < b.goals ? 1 : -1;
+            });
             let topPlayer = sortedPlayers[0];
             if (topPlayer) {
                 const goalsPerGame = Math.round(topPlayer.goals/topPlayer.games * 10) / 10;
@@ -187,7 +195,15 @@ const Home = () => {
 
     const renderMostAssists = () => {
         if (playerStats.length > 0) {
-            const sortedPlayers = playerStats.sort((a, b) => a.assists < b.assists ? 1 : -1)
+            const sortedPlayers = playerStats.sort((a, b) => {
+                if (a.assists === b.assists) {
+                    if (a.goals === b.goals) {
+                        return a.games < b.games ? 1 : -1
+                    }
+                    return a.goals < b.goals ? 1 : -1
+                 }
+                 return a.assists < b.assists ? 1 : -1;
+            });
             let topPlayer = sortedPlayers[0];
             if (topPlayer) {
                 const assistsPerGame = Math.round(topPlayer.assists/topPlayer.games * 10) / 10;
